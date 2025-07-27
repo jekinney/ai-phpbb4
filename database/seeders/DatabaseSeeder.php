@@ -13,8 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seed ACL system first (roles, permissions, super admin)
+        $this->call([
+            RolePermissionSeeder::class,
+        ]);
 
+        // Create additional test user (the super admin is created in RolePermissionSeeder)
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
