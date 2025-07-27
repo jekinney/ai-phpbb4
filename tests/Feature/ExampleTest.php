@@ -13,7 +13,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        // Expect redirect to login for protected routes
-        $response->assertStatus(302);
+        // Home page should be accessible to everyone
+        $response->assertStatus(200);
     }
 }

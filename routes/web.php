@@ -1,12 +1,13 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Models\Forum;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', App\Livewire\HomePage::class)->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -80,6 +81,10 @@ Route::middleware(['auth', 'permission:access_admin_panel'])->prefix('admin')->n
     Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
     
     Route::get('/roles', App\Livewire\Admin\RoleIndex::class)->name('roles.index');
+    
+    Route::middleware(['permission:manage_home_page'])->group(function () {
+        Route::get('/home-page', App\Livewire\Admin\HomePageManager::class)->name('home-page.index');
+    });
     
     Route::get('/permissions', function () {
         return view('admin.permissions.index');

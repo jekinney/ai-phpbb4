@@ -66,6 +66,7 @@ return [
             'access_admin_panel' => 'Access Admin Panel',
             'manage_settings' => 'Manage Settings',
             'manage_permissions' => 'Manage Permissions',
+            'manage_home_page' => 'Manage Home Page',
             'view_system_logs' => 'View System Logs',
             'backup_restore' => 'Backup Restore',
         ],
