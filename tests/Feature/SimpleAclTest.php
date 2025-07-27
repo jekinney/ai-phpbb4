@@ -13,8 +13,8 @@ class SimpleAclTest extends TestCase
 
     public function test_super_admin_user_exists()
     {
-        // Run the simple seeder
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        // Run the config-based seeder
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
         $superAdmin = User::where('email', 'admin@example.com')->first();
         
@@ -24,7 +24,7 @@ class SimpleAclTest extends TestCase
 
     public function test_roles_exist()
     {
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
         $this->assertDatabaseHas('roles', ['name' => 'super_admin']);
         $this->assertDatabaseHas('roles', ['name' => 'administrator']);
@@ -35,40 +35,34 @@ class SimpleAclTest extends TestCase
 
     public function test_permissions_exist()
     {
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
+        // Test some key permissions exist
         $this->assertDatabaseHas('permissions', ['name' => 'view_forums']);
+        $this->assertDatabaseHas('permissions', ['name' => 'manage_forums']);
         $this->assertDatabaseHas('permissions', ['name' => 'create_topics']);
-        $this->assertDatabaseHas('permissions', ['name' => 'manage_users']);
         $this->assertDatabaseHas('permissions', ['name' => 'access_admin_panel']);
-        $this->assertDatabaseHas('permissions', ['name' => 'moderate_posts']);
+        $this->assertDatabaseHas('permissions', ['name' => 'ban_users']);
     }
 
     public function test_role_permissions_are_assigned()
     {
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
-        // Check that super admin has many permissions
-        $this->assertDatabaseHas('role_permissions', [
-            'role_id' => 1, // super_admin
-            'permission_id' => 1 // view_forums
-        ]);
+        $superAdmin = Role::where('name', 'super_admin')->first();
+        $user = Role::where('name', 'user')->first();
         
-        $this->assertDatabaseHas('role_permissions', [
-            'role_id' => 1, // super_admin
-            'permission_id' => 22 // manage_users
-        ]);
+        // Super admin should have many permissions
+        $this->assertGreaterThan(30, $superAdmin->permissions()->count());
         
-        // Check that user role has basic permissions
-        $this->assertDatabaseHas('role_permissions', [
-            'role_id' => 4, // user
-            'permission_id' => 1 // view_forums
-        ]);
+        // Regular user should have basic permissions
+        $this->assertGreaterThan(5, $user->permissions()->count());
+        $this->assertLessThan(15, $user->permissions()->count());
     }
 
     public function test_super_admin_has_role_assigned()
     {
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
         $this->assertDatabaseHas('user_roles', [
             'user_id' => 1, // super admin user

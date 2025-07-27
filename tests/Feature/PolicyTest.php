@@ -16,7 +16,7 @@ class PolicyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         $this->artisan('db:seed', ['--class' => 'ForumSeeder']);
     }
 

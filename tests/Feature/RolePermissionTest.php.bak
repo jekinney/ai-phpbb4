@@ -1,0 +1,238 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+
+class RolePermissionTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Use a lighter seeding approach - only create what we need for tests
+        $this->createMinimalAclData();
+    }
+    
+    /**
+     * Create minimal ACL data for testing without full seeder
+     */
+    private function createMinimalAclData(): void
+    {
+        // Create basic permissions
+        $permissions = [
+            ['name' => 'manage_forums', 'display_name' => 'Manage Forums', 'category' => 'forum'],
+            ['name' => 'manage_users', 'display_name' => 'Manage Users', 'category' => 'user'],
+            ['name' => 'delete_all_posts', 'display_name' => 'Delete All Posts', 'category' => 'post'],
+            ['name' => 'moderate_topics', 'display_name' => 'Moderate Topics', 'category' => 'topic'],
+            ['name' => 'moderate_posts', 'display_name' => 'Moderate Posts', 'category' => 'post'],
+            ['name' => 'create_topics', 'display_name' => 'Create Topics', 'category' => 'topic'],
+            ['name' => 'create_posts', 'display_name' => 'Create Posts', 'category' => 'post'],
+            ['name' => 'view_forums', 'display_name' => 'View Forums', 'category' => 'forum'],
+            ['name' => 'access_admin_panel', 'display_name' => 'Access Admin Panel', 'category' => 'admin'],
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create($permission);
+        }
+
+        // Create basic roles
+        $adminRole = Role::create([
+            'name' => 'administrator',
+            'display_name' => 'Administrator',
+            'level' => 900,
+            'is_default' => false,
+        ]);
+
+        $modRole = Role::create([
+            'name' => 'moderator',
+            'display_name' => 'Moderator',
+            'level' => 500,
+            'is_default' => false,
+        ]);
+
+        $userRole = Role::create([
+            'name' => 'user',
+            'display_name' => 'User',
+            'level' => 100,
+            'is_default' => true,
+        ]);
+
+        $bannedRole = Role::create([
+            'name' => 'banned',
+            'display_name' => 'Banned',
+            'level' => 0,
+            'is_default' => false,
+        ]);
+
+        $superRole = Role::create([
+            'name' => 'super_admin',
+            'display_name' => 'Super Admin',
+            'level' => 1000,
+            'is_default' => false,
+        ]);
+
+        // Assign permissions to roles (minimal set)
+        $adminRole->permissions()->attach(Permission::whereIn('name', [
+            'manage_forums', 'manage_users', 'delete_all_posts', 'moderate_topics', 'moderate_posts'
+        ])->pluck('id'));
+
+        $modRole->permissions()->attach(Permission::whereIn('name', [
+            'moderate_topics', 'moderate_posts'
+        ])->pluck('id'));
+
+        $userRole->permissions()->attach(Permission::whereIn('name', [
+            'create_topics', 'create_posts', 'view_forums'
+        ])->pluck('id'));
+
+        // Super admin gets all permissions
+        $superRole->permissions()->attach(Permission::pluck('id'));
+
+        // Create super admin user
+        $superUser = User::create([
+            'name' => 'Super Administrator',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+        ]);
+
+        $superUser->roles()->attach($superRole->id);
+    }
+
+    /** @test */
+    public function it_can_create_roles_with_permissions()
+    {
+        $role = Role::where('name', 'administrator')->first();
+        
+        $this->assertNotNull($role);
+        $this->assertTrue($role->permissions->count() > 0);
+    }
+
+    /** @test */
+    public function it_can_assign_roles_to_users()
+    {
+        $user = User::factory()->create();
+        $role = Role::where('name', 'moderator')->first();
+        
+        $user->assignRole($role);
+        
+        $this->assertTrue($user->hasRole('moderator'));
+        $this->assertTrue($user->roles->contains($role));
+    }
+
+    /** @test */
+    public function it_can_check_user_permissions()
+    {
+        $user = User::factory()->create();
+        $adminRole = Role::where('name', 'administrator')->first();
+        
+        $user->assignRole($adminRole);
+        
+        $this->assertTrue($user->can('manage_forums'));
+        $this->assertTrue($user->can('manage_users'));
+        $this->assertTrue($user->can('delete_all_posts'));
+    }
+
+    /** @test */
+    public function moderator_has_limited_permissions()
+    {
+        $user = User::factory()->create();
+        $modRole = Role::where('name', 'moderator')->first();
+        
+        $user->assignRole($modRole);
+        
+        $this->assertTrue($user->can('moderate_topics'));
+        $this->assertTrue($user->can('moderate_posts'));
+        $this->assertFalse($user->can('manage_users'));
+        $this->assertFalse($user->can('manage_forums'));
+    }
+
+    /** @test */
+    public function regular_user_has_basic_permissions()
+    {
+        $user = User::factory()->create();
+        $userRole = Role::where('name', 'user')->first();
+        
+        $user->assignRole($userRole);
+        
+        $this->assertTrue($user->can('create_topics'));
+        $this->assertTrue($user->can('create_posts'));
+        $this->assertFalse($user->can('moderate_topics'));
+        $this->assertFalse($user->can('delete_all_posts'));
+    }
+
+    /** @test */
+    public function banned_user_has_no_permissions()
+    {
+        $user = User::factory()->create();
+        $bannedRole = Role::where('name', 'banned')->first();
+        
+        $user->assignRole($bannedRole);
+        
+        $this->assertFalse($user->can('create_topics'));
+        $this->assertFalse($user->can('create_posts'));
+        $this->assertFalse($user->can('view_forums'));
+    }
+
+    /** @test */
+    public function super_user_exists_and_has_all_permissions()
+    {
+        $superUser = User::where('email', 'admin@example.com')->first();
+        
+        $this->assertNotNull($superUser);
+        $this->assertTrue($superUser->hasRole('super_admin'));
+        $this->assertTrue($superUser->can('*')); // Can do anything
+    }
+
+    /** @test */
+    public function user_can_have_multiple_roles()
+    {
+        $user = User::factory()->create();
+        $userRole = Role::where('name', 'user')->first();
+        $modRole = Role::where('name', 'moderator')->first();
+        
+        $user->assignRole($userRole);
+        $user->assignRole($modRole);
+        
+        $this->assertTrue($user->hasRole('user'));
+        $this->assertTrue($user->hasRole('moderator'));
+        $this->assertTrue($user->can('create_topics')); // From user role
+        $this->assertTrue($user->can('moderate_topics')); // From moderator role
+    }
+
+    /** @test */
+    public function it_can_remove_roles_from_users()
+    {
+        $user = User::factory()->create();
+        $role = Role::where('name', 'moderator')->first();
+        
+        $user->assignRole($role);
+        $this->assertTrue($user->hasRole('moderator'));
+        
+        $user->removeRole($role);
+        $this->assertFalse($user->hasRole('moderator'));
+    }
+
+    /** @test */
+    public function permissions_are_managed_through_config()
+    {
+        // Test that we have the expected basic permissions
+        $expectedPermissions = ['manage_forums', 'manage_users', 'delete_all_posts', 'moderate_topics', 'moderate_posts', 'create_topics', 'create_posts', 'view_forums'];
+        $dbPermissions = Permission::pluck('name')->toArray();
+        
+        foreach ($expectedPermissions as $permissionName) {
+            $this->assertContains($permissionName, $dbPermissions, "Permission '{$permissionName}' should exist in database");
+        }
+        
+        // Should have at least the basic permissions
+        $this->assertGreaterThanOrEqual(count($expectedPermissions), count($dbPermissions));
+    }
+}

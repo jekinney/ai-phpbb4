@@ -13,7 +13,7 @@ class PermissionMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed', ['--class' => 'SimpleRolePermissionSeeder']);
+        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
     }
 
     public function test_super_admin_can_access_everything()
