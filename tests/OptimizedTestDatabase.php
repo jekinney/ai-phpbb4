@@ -11,6 +11,7 @@ trait OptimizedTestDatabase
     
     protected static $seeded = false;
     protected static $migrated = false;
+    protected static $forumSeeded = false;
 
     protected function setUp(): void
     {
@@ -32,7 +33,7 @@ trait OptimizedTestDatabase
     protected function seedForumData(): void
     {
         // Only seed forum data when specifically needed
-        if (!isset(static::$forumSeeded)) {
+        if (!static::$forumSeeded) {
             Artisan::call('db:seed', ['--class' => 'ForumSeeder']);
             static::$forumSeeded = true;
         }

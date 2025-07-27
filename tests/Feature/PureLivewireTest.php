@@ -3,20 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class PureLivewireTest extends TestCase
 {
-    use DatabaseTransactions;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        
-        // Run migrations if needed
-        $this->artisan('migrate');
-    }
+    use OptimizedTestDatabase;
 
     /** @test */
     public function home_page_pure_livewire_renders()

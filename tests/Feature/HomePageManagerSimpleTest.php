@@ -6,12 +6,12 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Models\HomePageContent;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class HomePageManagerSimpleTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     public function test_home_page_manager_component_can_be_instantiated(): void
     {

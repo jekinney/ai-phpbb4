@@ -54,8 +54,6 @@ class SimpleAclTest extends TestCase
 
     public function test_super_admin_has_role_assigned()
     {
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        
         $this->assertDatabaseHas('user_roles', [
             'user_id' => 1, // super admin user
             'role_id' => 1  // super admin role

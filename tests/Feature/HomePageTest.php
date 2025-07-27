@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class HomePageTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     public function test_home_page_loads_successfully(): void
     {

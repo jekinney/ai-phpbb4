@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class AdminRouteTest extends TestCase

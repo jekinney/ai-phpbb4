@@ -6,18 +6,17 @@ use App\Models\Forum;
 use App\Models\Post;
 use App\Models\Topic;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class PolicyTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        $this->artisan('db:seed', ['--class' => 'ForumSeeder']);
+        $this->seedForumData(); // Use the optimized seeding
     }
 
     public function test_forum_policies_work()

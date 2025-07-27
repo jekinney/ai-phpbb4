@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\HomePageContent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class HomePageManagerTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     protected function setUp(): void
     {

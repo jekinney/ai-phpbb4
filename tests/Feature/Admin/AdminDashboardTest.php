@@ -5,12 +5,12 @@ namespace Tests\Feature\Admin;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class AdminDashboardTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     public function test_admin_dashboard_requires_authentication(): void
     {
