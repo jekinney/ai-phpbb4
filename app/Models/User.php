@@ -58,4 +58,28 @@ class User extends Authenticatable
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+
+    /**
+     * Get the topics created by the user.
+     */
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
+    }
+
+    /**
+     * Get the posts created by the user.
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the user's post count.
+     */
+    public function getPostCountAttribute()
+    {
+        return $this->posts()->count();
+    }
 }
