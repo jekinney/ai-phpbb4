@@ -1,14 +1,27 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Models\Forum;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return redirect()->route('forums.index');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Static pages route
+Route::get('/pages/{page:slug}', function (App\Models\StaticPage $page) {
+    if (!$page->is_active) {
+        abort(404);
+    }
+    return view('static-page', ['page' => $page]);
+})->name('pages.show');
+
+// Authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', App\Livewire\Login::class)->name('login');
+    Route::get('/register', App\Livewire\Register::class)->name('register');
+});
 
 // Forum routes - using Livewire components
 Route::get('/forums', function () {
@@ -65,6 +78,45 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+// Admin routes - protected by admin permission
+Route::middleware(['auth', 'permission:access_admin_panel'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', App\Livewire\Admin\Dashboard::class)->name('dashboard');
+    
+    Route::get('/users', App\Livewire\Admin\UserIndex::class)->name('users.index');
+    
+    Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+    
+    Route::get('/roles', App\Livewire\Admin\RoleIndex::class)->name('roles.index');
+    
+    Route::middleware(['permission:manage_home_page'])->group(function () {
+        Route::get('/home-page', App\Livewire\Admin\HomePageManager::class)->name('home-page.index');
+    });
+    
+    Route::middleware(['permission:view_static_pages'])->group(function () {
+        Route::get('/static-pages', App\Livewire\Admin\StaticPagesManager::class)->name('static-pages.index');
+    });
+    
+    Route::get('/permissions', function () {
+        return view('admin.permissions.index');
+    })->name('permissions.index');
+    
+    Route::get('/forums', function () {
+        return view('admin.forums.index');
+    })->name('forums.index');
+    
+    Route::get('/forums/{forum}', function (App\Models\Forum $forum) {
+        return view('admin.forums.show', ['forum' => $forum]);
+    })->name('forums.show');
+    
+    Route::get('/settings', function () {
+        return view('admin.settings.index');
+    })->name('settings.index');
+    
+    Route::get('/logs', function () {
+        return view('admin.logs.index');
+    })->name('logs.index');
 });
 
 require __DIR__.'/auth.php';

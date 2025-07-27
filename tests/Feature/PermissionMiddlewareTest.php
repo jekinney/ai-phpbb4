@@ -3,18 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class PermissionMiddlewareTest extends TestCase
 {
-    use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-    }
+    use OptimizedTestDatabase;
 
     public function test_super_admin_can_access_everything()
     {

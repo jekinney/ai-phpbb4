@@ -4,18 +4,15 @@ namespace Tests\Feature;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class SimpleAclTest extends TestCase
 {
-    use RefreshDatabase;
+    use OptimizedTestDatabase;
 
     public function test_super_admin_user_exists()
     {
-        // Run the config-based seeder
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        
         $superAdmin = User::where('email', 'admin@example.com')->first();
         
         $this->assertNotNull($superAdmin);
@@ -24,8 +21,6 @@ class SimpleAclTest extends TestCase
 
     public function test_roles_exist()
     {
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        
         $this->assertDatabaseHas('roles', ['name' => 'super_admin']);
         $this->assertDatabaseHas('roles', ['name' => 'administrator']);
         $this->assertDatabaseHas('roles', ['name' => 'moderator']);
@@ -35,7 +30,6 @@ class SimpleAclTest extends TestCase
 
     public function test_permissions_exist()
     {
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
         
         // Test some key permissions exist
         $this->assertDatabaseHas('permissions', ['name' => 'view_forums']);
@@ -47,8 +41,6 @@ class SimpleAclTest extends TestCase
 
     public function test_role_permissions_are_assigned()
     {
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        
         $superAdmin = Role::where('name', 'super_admin')->first();
         $user = Role::where('name', 'user')->first();
         
@@ -62,8 +54,6 @@ class SimpleAclTest extends TestCase
 
     public function test_super_admin_has_role_assigned()
     {
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-        
         $this->assertDatabaseHas('user_roles', [
             'user_id' => 1, // super admin user
             'role_id' => 1  // super admin role

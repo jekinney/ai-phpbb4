@@ -5,20 +5,12 @@ namespace Tests\Feature;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\OptimizedTestDatabase;
 use Tests\TestCase;
 
 class RolePermissionTest extends TestCase
 {
-    use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        
-        // Run the seeder but with minimal overhead
-        $this->artisan('db:seed', ['--class' => 'ConfigBasedRolePermissionSeeder']);
-    }
+    use OptimizedTestDatabase;
 
     /** @test */
     public function basic_roles_exist()
