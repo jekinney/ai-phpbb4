@@ -15,7 +15,6 @@ A comprehensive TDD-driven ACL system has been implemented for the phpBB4-style 
 ### 🛡️ **Permission System**
 - **Granular permissions** for forum operations
 - **Category-based permission organization**
-- **Wildcard permissions** for super admins
 - **Seeder-only permission creation** (prevents UI tampering)
 
 ### 👤 **User Management**
@@ -96,12 +95,11 @@ if ($user->can('create_topics')) {
     // Allow topic creation
 }
 
-// Super admin check
-if ($user->is_super_admin) {
-    // Unrestricted access
+// Role-based check
+if ($user->hasRole('super_admin')) {
+    // Super admin with all permissions
 }
 
-// Role-based check
 if ($user->hasRole('moderator')) {
     // Moderator-specific actions
 }
@@ -143,9 +141,9 @@ Route::middleware('permission:manage_forums')->group(function () {
 - `users` - Extended with ACL fields
 
 ### Key Fields Added to Users
-- `is_super_admin` - Super admin flag
+
 - `is_banned` - Ban status
-- `banned_at` - Ban timestamp
+- `banned_at` - Ban timestamp  
 - `ban_reason` - Ban explanation
 
 ## Default Super Admin

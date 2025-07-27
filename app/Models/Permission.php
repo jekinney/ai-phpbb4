@@ -44,14 +44,6 @@ class Permission extends Model
     }
 
     /**
-     * Check if permission applies to all actions (wildcard)
-     */
-    public function isWildcard(): bool
-    {
-        return $this->name === '*';
-    }
-
-    /**
      * Scope to get permissions by category
      */
     public function scopeByCategory($query, string $category)

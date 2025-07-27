@@ -23,7 +23,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_super_admin',
         'is_banned',
         'banned_at',
         'ban_reason'
@@ -49,7 +48,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_super_admin' => 'boolean',
             'is_banned' => 'boolean',
             'banned_at' => 'datetime'
         ];
@@ -63,7 +61,7 @@ class User extends Authenticatable
                 return; // Skip in tests
             }
             
-            if (!$user->is_super_admin && $user->roles()->count() === 0) {
+            if ($user->roles()->count() === 0) {
                 $defaultRole = Role::where('is_default', true)->first();
                 if ($defaultRole) {
                     $user->roles()->attach($defaultRole->id);
@@ -169,23 +167,17 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user can perform a specific action
+     * Check if user can perform a specific action via our ACL system
      */
-    public function can($ability, $arguments = []): bool
+    public function hasPermission($ability): bool
     {
-        // Super admins can do anything
-        if ($this->is_super_admin) {
-            return true;
-        }
-
         // Banned users can't do anything
         if ($this->is_banned) {
             return false;
         }
 
         // Check direct permissions first
-        if ($this->permissions()->where('name', $ability)->exists() || 
-            $this->permissions()->where('name', '*')->exists()) {
+        if ($this->permissions()->where('name', $ability)->exists()) {
             return true;
         }
 
@@ -197,6 +189,24 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    /**
+     * Override Laravel's can method to use our ACL system for string abilities
+     */
+    public function can($ability, $arguments = []): bool
+    {
+        // If it's a string permission without arguments and it's a known permission, use our ACL system
+        if (is_string($ability) && empty($arguments) && !str_contains($ability, '\\')) {
+            // Check if this is actually a known permission in our system
+            $knownPermission = \App\Models\Permission::where('name', $ability)->exists();
+            if ($knownPermission) {
+                return $this->hasPermission($ability);
+            }
+        }
+        
+        // Otherwise, use Laravel's default Gate system (for policies)
+        return parent::can($ability, $arguments);
     }
 
     /**

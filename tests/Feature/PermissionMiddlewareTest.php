@@ -22,7 +22,9 @@ class PermissionMiddlewareTest extends TestCase
         
         $this->assertTrue($superAdmin->can('view_forums'));
         $this->assertTrue($superAdmin->can('manage_users'));
-        $this->assertTrue($superAdmin->can('any_permission'));
+        $this->assertTrue($superAdmin->can('manage_forums'));
+        $this->assertTrue($superAdmin->can('delete_all_posts'));
+        $this->assertTrue($superAdmin->can('access_admin_panel'));
     }
 
     public function test_regular_user_has_limited_permissions()
@@ -33,8 +35,11 @@ class PermissionMiddlewareTest extends TestCase
         
         $this->assertTrue($user->can('view_forums'));
         $this->assertTrue($user->can('create_topics'));
+        $this->assertTrue($user->can('view_posts'));
+        $this->assertTrue($user->can('create_posts'));
         $this->assertFalse($user->can('manage_users'));
         $this->assertFalse($user->can('manage_forums'));
+        $this->assertFalse($user->can('delete_all_posts'));
     }
 
     public function test_banned_user_cannot_do_anything()
@@ -44,6 +49,7 @@ class PermissionMiddlewareTest extends TestCase
         
         $this->assertFalse($user->can('view_forums'));
         $this->assertFalse($user->can('create_topics'));
+        $this->assertFalse($user->can('view_posts'));
     }
 
     public function test_user_can_be_banned()
