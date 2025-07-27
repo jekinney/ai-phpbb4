@@ -6,9 +6,13 @@ use App\Models\Topic;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return redirect()->route('forums.index');
-})->name('home');
+Route::get('/', App\Livewire\HomePage::class)->name('home');
+
+// Authentication routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', App\Livewire\Login::class)->name('login');
+    Route::get('/register', App\Livewire\Register::class)->name('register');
+});
 
 // Forum routes - using Livewire components
 Route::get('/forums', function () {
@@ -65,6 +69,37 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+// Admin routes - protected by admin permission
+Route::middleware(['auth', 'permission:access_admin_panel'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', App\Livewire\Admin\Dashboard::class)->name('dashboard');
+    
+    Route::get('/users', App\Livewire\Admin\UserIndex::class)->name('users.index');
+    
+    Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+    
+    Route::get('/roles', App\Livewire\Admin\RoleIndex::class)->name('roles.index');
+    
+    Route::get('/permissions', function () {
+        return view('admin.permissions.index');
+    })->name('permissions.index');
+    
+    Route::get('/forums', function () {
+        return view('admin.forums.index');
+    })->name('forums.index');
+    
+    Route::get('/forums/{forum}', function (App\Models\Forum $forum) {
+        return view('admin.forums.show', ['forum' => $forum]);
+    })->name('forums.show');
+    
+    Route::get('/settings', function () {
+        return view('admin.settings.index');
+    })->name('settings.index');
+    
+    Route::get('/logs', function () {
+        return view('admin.logs.index');
+    })->name('logs.index');
 });
 
 require __DIR__.'/auth.php';
