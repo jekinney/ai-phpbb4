@@ -9,6 +9,14 @@ use Livewire\Volt\Volt;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Static pages route
+Route::get('/pages/{page:slug}', function (App\Models\StaticPage $page) {
+    if (!$page->is_active) {
+        abort(404);
+    }
+    return view('static-page', ['page' => $page]);
+})->name('pages.show');
+
 // Authentication routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', App\Livewire\Login::class)->name('login');
@@ -84,6 +92,10 @@ Route::middleware(['auth', 'permission:access_admin_panel'])->prefix('admin')->n
     
     Route::middleware(['permission:manage_home_page'])->group(function () {
         Route::get('/home-page', App\Livewire\Admin\HomePageManager::class)->name('home-page.index');
+    });
+    
+    Route::middleware(['permission:view_static_pages'])->group(function () {
+        Route::get('/static-pages', App\Livewire\Admin\StaticPagesManager::class)->name('static-pages.index');
     });
     
     Route::get('/permissions', function () {

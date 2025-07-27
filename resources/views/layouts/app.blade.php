@@ -137,16 +137,23 @@
                     <ul class="mt-4 space-y-4">
                         <li><a href="{{ route('forums.index') }}" class="text-gray-600 hover:text-gray-900">Forums</a></li>
                         <li><a href="#" class="text-gray-600 hover:text-gray-900">Categories</a></li>
-                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Guidelines</a></li>
+                        <li><a href="{{ route('pages.show', 'community-guidelines') }}" class="text-gray-600 hover:text-gray-900">Guidelines</a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Support</h3>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Support & Info</h3>
                     <ul class="mt-4 space-y-4">
-                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Help Center</a></li>
-                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Contact Us</a></li>
-                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Privacy Policy</a></li>
+                        @php
+                            $footerPages = \App\Models\StaticPage::active()
+                                ->where('show_in_footer', true)
+                                ->orderBy('sort_order')
+                                ->limit(6)
+                                ->get();
+                        @endphp
+                        @foreach($footerPages as $page)
+                            <li><a href="{{ route('pages.show', $page->slug) }}" class="text-gray-600 hover:text-gray-900">{{ $page->title }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
             </div>

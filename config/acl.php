@@ -61,14 +61,19 @@ return [
             'view_mod_logs' => 'View Mod Logs',
         ],
 
-        // Administration
+        // Admin Panel Access
         'admin' => [
             'access_admin_panel' => 'Access Admin Panel',
-            'manage_settings' => 'Manage Settings',
-            'manage_permissions' => 'Manage Permissions',
-            'manage_home_page' => 'Manage Home Page',
             'view_system_logs' => 'View System Logs',
             'backup_restore' => 'Backup Restore',
+        ],
+
+        // Content Management
+        'content' => [
+            'view_static_pages' => 'View Static Pages',
+            'manage_static_pages' => 'Manage Static Pages',
+            'publish_static_pages' => 'Publish Static Pages',
+            'manage_home_page' => 'Manage Home Page Content',
         ],
     ],
 
@@ -136,6 +141,12 @@ return [
                 
                 // Admin permissions
                 'access_admin_panel',
+                
+                // Content permissions
+                'view_static_pages',
+                'manage_static_pages',
+                'publish_static_pages',
+                'manage_home_page',
             ],
         ],
 
