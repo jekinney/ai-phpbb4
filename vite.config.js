@@ -3,6 +3,7 @@ import {
 } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from "@tailwindcss/vite";
+import { resolve } from 'path';
 
 export default defineConfig({
     plugins: [
@@ -15,4 +16,13 @@ export default defineConfig({
     server: {
         cors: true,
     },
+    resolve: {
+        alias: {
+            // Ensure TinyMCE can find its assets
+            'tinymce': resolve(__dirname, 'node_modules/tinymce'),
+        }
+    },
+    optimizeDeps: {
+        include: ['tinymce']
+    }
 });

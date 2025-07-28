@@ -290,6 +290,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the file attachments uploaded by the user.
+     */
+    public function fileAttachments()
+    {
+        return $this->hasMany(FileAttachment::class);
+    }
+
+    /**
      * Get the user's post count.
      */
     public function getPostCountAttribute()

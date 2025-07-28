@@ -68,6 +68,17 @@ return [
             'manage_permissions' => 'Manage Permissions',
             'view_system_logs' => 'View System Logs',
             'backup_restore' => 'Backup Restore',
+            'view_documentation' => 'View Documentation',
+            'manage_static_pages' => 'Manage Static Pages',
+        ],
+
+        // File Management
+        'files' => [
+            'upload_files' => 'Upload Files',
+            'manage_attachments' => 'Manage Attachments',
+            'delete_any_attachment' => 'Delete Any Attachment',
+            'view_file_stats' => 'View File Statistics',
+            'manage_file_settings' => 'Manage File Settings',
         ],
     ],
 
@@ -135,6 +146,19 @@ return [
                 
                 // Admin permissions
                 'access_admin_panel',
+                'manage_settings',
+                'manage_permissions',
+                'view_system_logs',
+                'backup_restore',
+                'view_documentation',
+                'manage_static_pages',
+                
+                // File permissions
+                'upload_files',
+                'manage_attachments',
+                'delete_any_attachment',
+                'view_file_stats',
+                'manage_file_settings',
             ],
         ],
 
@@ -182,6 +206,7 @@ return [
                 'edit_own_posts',
                 'delete_own_posts',
                 'view_users',
+                'upload_files',
             ],
         ],
 
