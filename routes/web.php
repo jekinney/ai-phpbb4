@@ -33,13 +33,9 @@ Route::get('/games', function () {
     return view('livewire-wrapper.games-index');
 })->name('games.index');
 
-Route::get('/games/snake/{gameSlug?}', \App\Livewire\Games\SnakeGame::class)
-    ->defaults('gameSlug', 'snake')
-    ->name('games.snake');
-
-Route::get('/games/memory-match/{gameSlug?}', \App\Livewire\Games\MemoryMatchGame::class)
-    ->defaults('gameSlug', 'memory-match')
-    ->name('games.memory-match');
+// Universal game route using route model binding
+Route::get('/games/{game}', \App\Livewire\Games\GamePage::class)
+    ->name('games.show');
 
 Route::middleware(['auth'])->group(function () {
     // Topic creation - using Livewire component

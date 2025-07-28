@@ -47,7 +47,7 @@ class GameSeeder extends Seeder
                 'name' => 'Memory Match',
                 'description' => 'Match pairs of cards in the fewest moves possible.',
                 'icon' => '🧠',
-                'is_active' => false,
+                'is_active' => true,
                 'scoring_type' => 'lowest',
                 'max_players_per_game' => 1,
                 'reset_frequency' => 'daily',
@@ -76,7 +76,14 @@ class GameSeeder extends Seeder
         ];
 
         foreach ($games as $gameData) {
-            $game = Game::create($gameData);
+            // Extract the name to use as the unique identifier
+            $name = $gameData['name'];
+            
+            // Use updateOrCreate to avoid duplicate key errors
+            $game = Game::updateOrCreate(
+                ['name' => $name], // Search criteria
+                $gameData // Data to create or update
+            );
             
             // Set next reset date if frequency is not 'never'
             if ($game->reset_frequency !== 'never') {

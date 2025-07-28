@@ -36,7 +36,17 @@
                                 <div class="text-4xl mr-4">{{ $game->icon }}</div>
                             @endif
                             <div class="flex-1">
-                                <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ $game->name }}</h3>
+                                <h3 class="text-xl font-semibold">
+                                    @if($game->hasPlayableRoute())
+                                        <a href="{{ $game->url }}" class="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                                            {{ $game->name }}
+                                        </a>
+                                    @else
+                                        <a href="{{ $game->url }}" class="text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-not-allowed opacity-75" title="Game not yet available">
+                                            {{ $game->name }}
+                                        </a>
+                                    @endif
+                                </h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 capitalize">{{ $game->scoring_type }} score wins</p>
                             </div>
                         </div>
@@ -86,17 +96,13 @@
                         @endif
                         
                         <div class="flex space-x-3">
-                            @if($game->slug === 'snake')
-                                <a href="{{ route('games.snake') }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 text-center">
-                                    Play Game
-                                </a>
-                            @elseif($game->slug === 'memory-match')
-                                <a href="{{ route('games.memory-match') }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 text-center">
+                            @if($game->hasPlayableRoute())
+                                <a href="{{ $game->url }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 text-center">
                                     Play Game
                                 </a>
                             @else
-                                <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
-                                    Play Game
+                                <button class="flex-1 bg-gray-400 text-white font-medium py-2 px-4 rounded-md cursor-not-allowed opacity-75" disabled title="Game not yet available">
+                                    Coming Soon
                                 </button>
                             @endif
                             <button class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition-colors duration-200">

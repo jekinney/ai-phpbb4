@@ -198,4 +198,29 @@ class Game extends Model
     {
         return $query->orderBy('sort_order')->orderBy('name');
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Get the URL for this game.
+     */
+    public function getUrlAttribute()
+    {
+        return route('games.show', $this);
+    }
+
+    /**
+     * Check if this game has a playable route.
+     */
+    public function hasPlayableRoute()
+    {
+        // All games use the universal route now
+        return true;
+    }
 }
