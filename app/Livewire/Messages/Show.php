@@ -47,6 +47,16 @@ class Show extends Component
     public function sendReply()
     {
         $this->authorize('send_messages');
+        
+        // Check if user is PM banned
+        if (auth()->user()->isPmBanned()) {
+            $this->dispatch('showToast', [
+                'type' => 'error', 
+                'message' => 'You are banned from sending personal messages.'
+            ]);
+            return;
+        }
+        
         $this->validate();
 
         try {
@@ -107,6 +117,7 @@ class Show extends Component
     public function getCanReplyProperty()
     {
         return auth()->user()->hasPermission('send_messages') && 
+               !auth()->user()->isPmBanned() &&
                $this->message->sender_id !== auth()->id();
     }
 

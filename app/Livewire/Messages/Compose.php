@@ -8,6 +8,7 @@ use App\Models\PersonalMessageParticipant;
 use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class Compose extends Component
 {
@@ -38,6 +39,21 @@ class Compose extends Component
     public function mount($replyTo = null, $recipient = null)
     {
         $this->authorize('send_messages');
+        
+        // Check if user is PM banned
+        if (Auth::user()->isPmBanned()) {
+            $banInfo = Auth::user()->getPmBanInfo();
+            $message = 'You are banned from sending personal messages.';
+            if ($banInfo['reason']) {
+                $message .= ' Reason: ' . $banInfo['reason'];
+            }
+            if ($banInfo['expires_at']) {
+                $message .= ' Ban expires: ' . $banInfo['expires_at']->format('M j, Y \a\t g:i A');
+            }
+            
+            session()->flash('error', $message);
+            return redirect()->route('messages.inbox');
+        }
 
         if ($replyTo) {
             $originalMessage = PersonalMessage::findOrFail($replyTo);
@@ -92,6 +108,15 @@ class Compose extends Component
 
     public function send()
     {
+        // Double-check PM ban status
+        if (Auth::user()->isPmBanned()) {
+            $this->dispatch('showToast', [
+                'type' => 'error', 
+                'message' => 'You are banned from sending personal messages.'
+            ]);
+            return;
+        }
+
         $this->validate();
 
         // Parse recipients
@@ -105,7 +130,7 @@ class Compose extends Component
 
         // Check if user can send messages to all recipients
         foreach ($recipientUsers as $recipient) {
-            if (!$recipient->hasPermission('receive_messages')) {
+            if (!$recipient->canReceiveMessages()) {
                 $this->addError('recipients', "User {$recipient->name} cannot receive messages.");
                 return;
             }

@@ -124,6 +124,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/static-pages', function () {
         return view('livewire-wrapper.admin.static-pages');
     })->name('static-pages');
+    
+    Route::get('/pm-bans', function () {
+        return view('livewire-wrapper.admin.pm-ban-management');
+    })->name('pm-bans');
 });
 
 require __DIR__.'/auth.php';

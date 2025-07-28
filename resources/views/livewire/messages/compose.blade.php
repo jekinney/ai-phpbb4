@@ -18,20 +18,48 @@
         </a>
     </div>
 
-    <form wire:submit="send" class="space-y-6">
-        <!-- Error Display -->
-        @if ($errors->has('general'))
-            <div class="rounded-md bg-red-50 p-4">
-                <div class="flex">
-                    <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div class="ml-3">
-                        <p class="text-sm text-red-800">{{ $errors->first('general') }}</p>
+    <!-- PM Ban Warning -->
+    @if(auth()->user()->isPmBanned())
+        <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4 border border-red-200 dark:border-red-800">
+            <div class="flex">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Personal Messaging Restricted</h3>
+                    <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                        <p>You are currently banned from using the personal messaging system.</p>
+                        @if(auth()->user()->pm_ban_reason)
+                            <p class="mt-1"><strong>Reason:</strong> {{ auth()->user()->pm_ban_reason }}</p>
+                        @endif
+                        @if(auth()->user()->pm_ban_expires_at)
+                            <p class="mt-1"><strong>Expires:</strong> {{ auth()->user()->pm_ban_expires_at->format('M j, Y g:i A') }}</p>
+                        @endif
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+        <div class="text-center py-8">
+            <a href="{{ route('messages.inbox') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                Return to Messages
+            </a>
+        </div>
+    @else
+        <form wire:submit="send" class="space-y-6">
+            <!-- Error Display -->
+            @if ($errors->has('general'))
+                <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-800">{{ $errors->first('general') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
         <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg">
             <div class="px-4 py-5 sm:p-6 space-y-6">
@@ -144,4 +172,5 @@
             </a>
         </div>
     </form>
+    @endif
 </div>

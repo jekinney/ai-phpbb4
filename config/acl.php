@@ -90,6 +90,8 @@ return [
             'delete_any_message' => 'Delete Any Message (Admin)',
             'view_all_messages' => 'View All Messages (Admin)',
             'bypass_message_limit' => 'Bypass Message Limits',
+            'ban_from_messages' => 'Ban Users from Messaging',
+            'manage_pm_bans' => 'Manage PM Bans',
         ],
     ],
 
@@ -205,6 +207,8 @@ return [
                 'receive_messages',
                 'delete_own_messages',
                 'delete_any_message',
+                'ban_from_messages',
+                'manage_pm_bans',
             ],
         ],
 
