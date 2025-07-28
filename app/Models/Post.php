@@ -36,6 +36,12 @@ class Post extends Model
 
         static::created(function ($post) {
             $post->topic->updateStats();
+            
+            // Create notifications for topic followers (only for replies, not first posts)
+            // TODO: Enable when TopicFollowNotification is ready
+            // if (!$post->is_first_post) {
+            //     TopicFollowNotification::createForNewReply($post);
+            // }
         });
 
         static::deleted(function ($post) {

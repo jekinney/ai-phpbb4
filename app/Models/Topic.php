@@ -44,6 +44,11 @@ class Topic extends Model
                 $topic->slug = Str::slug($topic->title);
             }
         });
+
+        static::created(function ($topic) {
+            // Auto-follow the topic creator
+            TopicFollow::followTopic($topic->user_id, $topic->id, true);
+        });
     }
 
     /**
@@ -143,5 +148,48 @@ class Topic extends Model
             ->orderBy('is_sticky', 'desc')
             ->orderBy('last_post_at', 'desc')
             ->paginate($perPage);
+    }
+
+    /**
+     * Get users following this topic.
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'topic_follows')
+            ->withPivot(['notify_replies', 'is_active', 'last_notified_at'])
+            ->withTimestamps()
+            ->wherePivot('is_active', true);
+    }
+
+    /**
+     * Get topic follows for this topic.
+     */
+    public function topicFollows()
+    {
+        return $this->hasMany(TopicFollow::class);
+    }
+
+    /**
+     * Get active followers count.
+     */
+    public function getFollowersCountAttribute(): int
+    {
+        return $this->topicFollows()->active()->count();
+    }
+
+    /**
+     * Check if a user is following this topic.
+     */
+    public function isFollowedBy($userId): bool
+    {
+        return TopicFollow::isFollowing($userId, $this->id);
+    }
+
+    /**
+     * Get followers who should be notified of new replies.
+     */
+    public function getNotifiableFollowers()
+    {
+        return TopicFollow::getNotifiableFollowers($this->id);
     }
 }

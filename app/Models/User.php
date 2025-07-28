@@ -298,10 +298,90 @@ class User extends Authenticatable
     }
 
     /**
+     * Get personal messages sent by the user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(PersonalMessage::class, 'sender_id');
+    }
+
+    /**
+     * Get personal messages the user is a participant in.
+     */
+    public function personalMessages()
+    {
+        return $this->belongsToMany(PersonalMessage::class, 'personal_message_participants', 'user_id', 'message_id')
+            ->withPivot(['type', 'is_read', 'read_at', 'is_deleted', 'deleted_at', 'is_archived', 'archived_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get personal message participants for this user.
+     */
+    public function messageParticipants()
+    {
+        return $this->hasMany(PersonalMessageParticipant::class);
+    }
+
+    /**
+     * Get unread personal messages count.
+     */
+    public function getUnreadMessagesCountAttribute()
+    {
+        return $this->messageParticipants()
+            ->where('is_read', false)
+            ->where('is_deleted', false)
+            ->count();
+    }
+
+    /**
      * Get the user's post count.
      */
     public function getPostCountAttribute()
     {
         return $this->posts()->count();
+    }
+
+    /**
+     * Get topics the user is following.
+     */
+    public function followedTopics()
+    {
+        return $this->belongsToMany(Topic::class, 'topic_follows')
+            ->withPivot(['notify_replies', 'is_active', 'last_notified_at'])
+            ->withTimestamps()
+            ->wherePivot('is_active', true);
+    }
+
+    /**
+     * Get topic follows for this user.
+     */
+    public function topicFollows()
+    {
+        return $this->hasMany(TopicFollow::class);
+    }
+
+    /**
+     * Check if user is following a topic.
+     */
+    public function isFollowingTopic($topicId): bool
+    {
+        return TopicFollow::isFollowing($this->id, $topicId);
+    }
+
+    /**
+     * Follow a topic.
+     */
+    public function followTopic($topicId, $notifyReplies = true): TopicFollow
+    {
+        return TopicFollow::followTopic($this->id, $topicId, $notifyReplies);
+    }
+
+    /**
+     * Unfollow a topic.
+     */
+    public function unfollowTopic($topicId): bool
+    {
+        return TopicFollow::unfollowTopic($this->id, $topicId);
     }
 }

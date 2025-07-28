@@ -31,6 +31,7 @@ return [
             'lock_topics' => 'Lock Topics',
             'sticky_topics' => 'Sticky Topics',
             'move_topics' => 'Move Topics',
+            'follow_topics' => 'Follow Topics',
         ],
 
         // Post Management
@@ -80,6 +81,16 @@ return [
             'view_file_stats' => 'View File Statistics',
             'manage_file_settings' => 'Manage File Settings',
         ],
+
+        // Personal Messages
+        'messages' => [
+            'send_messages' => 'Send Personal Messages',
+            'receive_messages' => 'Receive Personal Messages',
+            'delete_own_messages' => 'Delete Own Messages',
+            'delete_any_message' => 'Delete Any Message (Admin)',
+            'view_all_messages' => 'View All Messages (Admin)',
+            'bypass_message_limit' => 'Bypass Message Limits',
+        ],
     ],
 
     /*
@@ -121,6 +132,7 @@ return [
                 'lock_topics',
                 'sticky_topics',
                 'move_topics',
+                'follow_topics',
                 
                 // Post permissions
                 'view_posts',
@@ -176,6 +188,7 @@ return [
                 'lock_topics',
                 'sticky_topics',
                 'move_topics',
+                'follow_topics',
                 'view_posts',
                 'create_posts',
                 'edit_own_posts',
@@ -188,6 +201,10 @@ return [
                 'view_reports',
                 'handle_reports',
                 'view_mod_logs',
+                'send_messages',
+                'receive_messages',
+                'delete_own_messages',
+                'delete_any_message',
             ],
         ],
 
@@ -201,12 +218,16 @@ return [
                 'create_topics',
                 'edit_own_topics',
                 'delete_own_topics',
+                'follow_topics',
                 'view_posts',
                 'create_posts',
                 'edit_own_posts',
                 'delete_own_posts',
                 'view_users',
                 'upload_files',
+                'send_messages',
+                'receive_messages',
+                'delete_own_messages',
             ],
         ],
 

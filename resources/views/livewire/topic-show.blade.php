@@ -50,23 +50,28 @@
                 </div>
 
                 <!-- Topic Actions -->
-                @auth
-                    <div class="flex items-center space-x-2">
-                        @can('update', $topic)
-                            <a href="{{ route('topics.edit', $topic) }}" 
-                               class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Edit
-                            </a>
-                        @endcan
-                        
-                        @can('delete', $topic)
-                            <button wire:click="$dispatch('confirm-delete')" 
-                                    class="inline-flex items-center px-3 py-1 border border-red-300 dark:border-red-600 rounded-md text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                Delete
-                            </button>
-                        @endcan
-                    </div>
-                @endauth
+                <div class="flex items-center space-x-4">
+                    <!-- Follow Component -->
+                    <livewire:topic-follow :topic="$topic" />
+                    
+                    @auth
+                        <div class="flex items-center space-x-2">
+                            @can('update', $topic)
+                                <a href="{{ route('topics.edit', $topic) }}" 
+                                   class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    Edit
+                                </a>
+                            @endcan
+                            
+                            @can('delete', $topic)
+                                <button wire:click="$dispatch('confirm-delete')" 
+                                        class="inline-flex items-center px-3 py-1 border border-red-300 dark:border-red-600 rounded-md text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    Delete
+                                </button>
+                            @endcan
+                        </div>
+                    @endauth
+                </div>
             </div>
         </div>
 
