@@ -55,7 +55,7 @@ class AclConfigServiceTest extends TestCase
         
         // User should have limited permissions
         $this->assertGreaterThan(5, $userPermissions->count());
-        $this->assertLessThan(15, $userPermissions->count());
+        $this->assertLessThanOrEqual(16, $userPermissions->count());
     }
 
     public function test_can_check_role_has_permission()

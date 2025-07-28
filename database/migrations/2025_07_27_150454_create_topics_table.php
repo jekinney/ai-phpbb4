@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_locked')->default(false);
             $table->integer('views_count')->default(0);
             $table->integer('posts_count')->default(0);
-            $table->foreignId('last_post_id')->nullable()->constrained('posts')->onDelete('set null');
+            $table->unsignedBigInteger('last_post_id')->nullable();
             $table->foreignId('last_post_user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('last_post_at')->nullable();
             $table->timestamps();

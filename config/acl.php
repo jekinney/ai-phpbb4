@@ -245,6 +245,7 @@ return [
                 'send_messages',
                 'receive_messages',
                 'delete_own_messages',
+                'play_games',
             ],
         ],
 

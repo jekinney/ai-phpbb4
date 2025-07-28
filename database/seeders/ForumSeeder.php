@@ -17,22 +17,25 @@ class ForumSeeder extends Seeder
     public function run(): void
     {
         // Create categories
-        $generalCategory = Category::create([
+        $generalCategory = Category::firstOrCreate([
             'name' => 'General Discussion',
+        ], [
             'description' => 'General topics and community discussions',
             'sort_order' => 1,
             'is_active' => true,
         ]);
 
-        $techCategory = Category::create([
+        $techCategory = Category::firstOrCreate([
             'name' => 'Technology',
+        ], [
             'description' => 'Technology-related discussions',
             'sort_order' => 2,
             'is_active' => true,
         ]);
 
-        $supportCategory = Category::create([
+        $supportCategory = Category::firstOrCreate([
             'name' => 'Support',
+        ], [
             'description' => 'Get help and support from the community',
             'sort_order' => 3,
             'is_active' => true,

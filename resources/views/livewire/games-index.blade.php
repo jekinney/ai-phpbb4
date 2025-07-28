@@ -3,6 +3,26 @@
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Games</h1>
         <p class="text-gray-600 dark:text-gray-400 mt-2">Challenge yourself and compete with other players</p>
+        @guest
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            You can play all games as a guest, but your scores won't be saved or count towards leaderboards. 
+                            <a href="{{ route('login') }}" class="font-medium underline hover:text-blue-600 dark:hover:text-blue-200">Login</a> 
+                            or 
+                            <a href="{{ route('register') }}" class="font-medium underline hover:text-blue-600 dark:hover:text-blue-200">register</a> 
+                            to save your progress and compete!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endguest
     </div>
 
     <!-- Games Grid -->
@@ -66,11 +86,19 @@
                         @endif
                         
                         <div class="flex space-x-3">
-                            @can('play_games')
+                            @if($game->slug === 'snake')
+                                <a href="{{ route('games.snake') }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 text-center">
+                                    Play Game
+                                </a>
+                            @elseif($game->slug === 'memory-match')
+                                <a href="{{ route('games.memory-match') }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 text-center">
+                                    Play Game
+                                </a>
+                            @else
                                 <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
                                     Play Game
                                 </button>
-                            @endcan
+                            @endif
                             <button class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition-colors duration-200">
                                 Leaderboard
                             </button>

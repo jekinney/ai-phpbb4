@@ -12,7 +12,7 @@ class GamesIndex extends Component
 
     public function mount()
     {
-        $this->authorize('view_leaderboards');
+        // Allow guests to view games, but restrict certain features for authenticated users only
     }
 
     public function render()

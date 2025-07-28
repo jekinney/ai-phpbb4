@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->integer('topics_count')->default(0);
             $table->integer('posts_count')->default(0);
-            $table->foreignId('last_post_id')->nullable()->constrained('posts')->onDelete('set null');
+            $table->unsignedBigInteger('last_post_id')->nullable();
             $table->timestamp('last_post_at')->nullable();
             $table->timestamps();
         });

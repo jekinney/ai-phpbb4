@@ -19,10 +19,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create additional test user (the super admin is created in ConfigBasedRolePermissionSeeder)
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
 
         // Seed forum data
         $this->call([

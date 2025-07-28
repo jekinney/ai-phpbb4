@@ -123,7 +123,8 @@
 
     <!-- Main Content -->
     <main>
-        {{ $slot }}
+        {{ $slot ?? '' }}
+        @yield('content')
     </main>
 
     <!-- Footer -->
@@ -147,7 +148,7 @@
                     <ul class="mt-4 space-y-4">
                         <li><a href="{{ route('forums.index') }}" class="text-gray-600 hover:text-gray-900">Forums</a></li>
                         <li><a href="#" class="text-gray-600 hover:text-gray-900">Categories</a></li>
-                        <li><a href="{{ route('pages.show', 'community-guidelines') }}" class="text-gray-600 hover:text-gray-900">Guidelines</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Guidelines</a></li>
                     </ul>
                 </div>
                 

@@ -26,7 +26,6 @@ return new class extends Migration
             $table->unsignedInteger('download_count')->default(0);
             $table->timestamps();
             
-            $table->index(['attachable_type', 'attachable_id']);
             $table->index('file_hash');
         });
     }
