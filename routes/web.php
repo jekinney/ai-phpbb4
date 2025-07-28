@@ -28,6 +28,11 @@ Route::get('/topics/{topic}', function (Topic $topic) {
     return view('livewire-wrapper.topic-show', ['topic' => $topic]);
 })->name('topics.show');
 
+// Games routes
+Route::get('/games', function () {
+    return view('livewire-wrapper.games-index');
+})->name('games.index');
+
 Route::middleware(['auth'])->group(function () {
     // Topic creation - using Livewire component
     Route::get('/forums/{forum}/topics/create', function (Forum $forum) {
@@ -128,6 +133,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/pm-bans', function () {
         return view('livewire-wrapper.admin.pm-ban-management');
     })->name('pm-bans');
+    
+    Route::get('/games', function () {
+        return view('livewire-wrapper.admin.game-management');
+    })->name('games');
 });
 
 require __DIR__.'/auth.php';

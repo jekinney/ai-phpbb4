@@ -93,6 +93,19 @@ return [
             'ban_from_messages' => 'Ban Users from Messaging',
             'manage_pm_bans' => 'Manage PM Bans',
         ],
+
+        // Games
+        'games' => [
+            'play_games' => 'Play Games',
+            'view_leaderboards' => 'View Leaderboards',
+            'submit_scores' => 'Submit Game Scores',
+            'manage_games' => 'Manage Games',
+            'create_games' => 'Create Games',
+            'edit_games' => 'Edit Games',
+            'delete_games' => 'Delete Games',
+            'reset_leaderboards' => 'Reset Game Leaderboards',
+            'view_game_stats' => 'View Game Statistics',
+        ],
     ],
 
     /*

@@ -480,4 +480,39 @@ class User extends Authenticatable
             'is_permanent' => is_null($this->pm_ban_expires_at),
         ];
     }
+
+    /**
+     * Get all game scores for this user.
+     */
+    public function gameScores()
+    {
+        return $this->hasMany(GameScore::class);
+    }
+
+    /**
+     * Get leaderboard entries for this user.
+     */
+    public function gameLeaderboards()
+    {
+        return $this->hasMany(GameLeaderboard::class);
+    }
+
+    /**
+     * Get the user's best score for a specific game.
+     */
+    public function getBestScore(Game $game)
+    {
+        return $this->gameLeaderboards()
+                   ->where('game_id', $game->id)
+                   ->first();
+    }
+
+    /**
+     * Get the user's rank for a specific game.
+     */
+    public function getGameRank(Game $game): ?int
+    {
+        $leaderboard = $this->getBestScore($game);
+        return $leaderboard ? $leaderboard->rank : null;
+    }
 }
