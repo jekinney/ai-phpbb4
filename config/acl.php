@@ -31,6 +31,7 @@ return [
             'lock_topics' => 'Lock Topics',
             'sticky_topics' => 'Sticky Topics',
             'move_topics' => 'Move Topics',
+            'follow_topics' => 'Follow Topics',
         ],
 
         // Post Management
@@ -68,6 +69,29 @@ return [
             'manage_permissions' => 'Manage Permissions',
             'view_system_logs' => 'View System Logs',
             'backup_restore' => 'Backup Restore',
+            'view_documentation' => 'View Documentation',
+            'manage_static_pages' => 'Manage Static Pages',
+        ],
+
+        // File Management
+        'files' => [
+            'upload_files' => 'Upload Files',
+            'manage_attachments' => 'Manage Attachments',
+            'delete_any_attachment' => 'Delete Any Attachment',
+            'view_file_stats' => 'View File Statistics',
+            'manage_file_settings' => 'Manage File Settings',
+        ],
+
+        // Personal Messages
+        'messages' => [
+            'send_messages' => 'Send Personal Messages',
+            'receive_messages' => 'Receive Personal Messages',
+            'delete_own_messages' => 'Delete Own Messages',
+            'delete_any_message' => 'Delete Any Message (Admin)',
+            'view_all_messages' => 'View All Messages (Admin)',
+            'bypass_message_limit' => 'Bypass Message Limits',
+            'ban_from_messages' => 'Ban Users from Messaging',
+            'manage_pm_bans' => 'Manage PM Bans',
         ],
     ],
 
@@ -110,6 +134,7 @@ return [
                 'lock_topics',
                 'sticky_topics',
                 'move_topics',
+                'follow_topics',
                 
                 // Post permissions
                 'view_posts',
@@ -135,6 +160,19 @@ return [
                 
                 // Admin permissions
                 'access_admin_panel',
+                'manage_settings',
+                'manage_permissions',
+                'view_system_logs',
+                'backup_restore',
+                'view_documentation',
+                'manage_static_pages',
+                
+                // File permissions
+                'upload_files',
+                'manage_attachments',
+                'delete_any_attachment',
+                'view_file_stats',
+                'manage_file_settings',
             ],
         ],
 
@@ -152,6 +190,7 @@ return [
                 'lock_topics',
                 'sticky_topics',
                 'move_topics',
+                'follow_topics',
                 'view_posts',
                 'create_posts',
                 'edit_own_posts',
@@ -164,6 +203,12 @@ return [
                 'view_reports',
                 'handle_reports',
                 'view_mod_logs',
+                'send_messages',
+                'receive_messages',
+                'delete_own_messages',
+                'delete_any_message',
+                'ban_from_messages',
+                'manage_pm_bans',
             ],
         ],
 
@@ -177,11 +222,16 @@ return [
                 'create_topics',
                 'edit_own_topics',
                 'delete_own_topics',
+                'follow_topics',
                 'view_posts',
                 'create_posts',
                 'edit_own_posts',
                 'delete_own_posts',
                 'view_users',
+                'upload_files',
+                'send_messages',
+                'receive_messages',
+                'delete_own_messages',
             ],
         ],
 

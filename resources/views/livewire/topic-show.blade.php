@@ -50,109 +50,34 @@
                 </div>
 
                 <!-- Topic Actions -->
-                @auth
-                    <div class="flex items-center space-x-2">
-                        @can('update', $topic)
-                            <a href="{{ route('topics.edit', $topic) }}" 
-                               class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Edit
-                            </a>
-                        @endcan
-                        
-                        @can('delete', $topic)
-                            <button wire:click="$dispatch('confirm-delete')" 
-                                    class="inline-flex items-center px-3 py-1 border border-red-300 dark:border-red-600 rounded-md text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                Delete
-                            </button>
-                        @endcan
-                    </div>
-                @endauth
+                <div class="flex items-center space-x-4">
+                    <!-- Follow Component -->
+                    <livewire:topic-follow :topic="$topic" />
+                    
+                    @auth
+                        <div class="flex items-center space-x-2">
+                            @can('update', $topic)
+                                <a href="{{ route('topics.edit', $topic) }}" 
+                                   class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    Edit
+                                </a>
+                            @endcan
+                            
+                            @can('delete', $topic)
+                                <button wire:click="$dispatch('confirm-delete')" 
+                                        class="inline-flex items-center px-3 py-1 border border-red-300 dark:border-red-600 rounded-md text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    Delete
+                                </button>
+                            @endcan
+                        </div>
+                    @endauth
+                </div>
             </div>
         </div>
 
         <!-- Posts -->
         @foreach($posts as $post)
-            <div class="border-b border-neutral-100 dark:border-neutral-800 last:border-b-0" id="post-{{ $post->id }}">
-                <div class="p-6">
-                    <div class="flex">
-                        <!-- User Info Sidebar -->
-                        <div class="flex-shrink-0 w-40 mr-6">
-                            <div class="text-center">
-                                <!-- User Avatar -->
-                                <div class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center">
-                                    <span class="text-lg font-semibold text-gray-600 dark:text-gray-300">
-                                        {{ $post->user->initials() }}
-                                    </span>
-                                </div>
-                                
-                                <!-- Username -->
-                                <div class="font-medium text-gray-900 dark:text-white">
-                                    {{ $post->user->name }}
-                                </div>
-                                
-                                <!-- User stats -->
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                    {{ $post->user->posts->count() }} posts
-                                </div>
-                                
-                                <!-- Join date -->
-                                <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                                    Joined {{ $post->user->created_at->format('M Y') }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Post Content -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="text-sm text-gray-600 dark:text-gray-400">
-                                    <a href="#post-{{ $post->id }}" class="hover:text-gray-900 dark:hover:text-white transition-colors">
-                                        {{ $post->created_at->format('M j, Y \a	 g:i A') }}
-                                    </a>
-                                    @if($post->is_first_post)
-                                        <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                            Original Post
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <!-- Post Actions -->
-                                @auth
-                                    <div class="flex items-center space-x-2">
-                                        @can('update', $post)
-                                            <a href="{{ route('posts.edit', $post) }}" 
-                                               class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                                                Edit
-                                            </a>
-                                        @endcan
-                                        
-                                        @can('delete', $post)
-                                            @if(!$post->is_first_post)
-                                                <button wire:click="$dispatch('confirm-delete-post', { id: {{ $post->id }} })"
-                                                        class="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
-                                                    Delete
-                                                </button>
-                                            @endif
-                                        @endcan
-                                    </div>
-                                @endauth
-                            </div>
-
-                            <!-- Post Content -->
-                            <div class="prose prose-sm max-w-none dark:prose-invert">
-                                {!! $post->content_html ?: nl2br(e($post->content)) !!}
-                            </div>
-
-                            <!-- Edit History -->
-                            @if($post->wasEdited())
-                                <div class="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-700 text-xs text-gray-500 dark:text-gray-500">
-                                    Last edited by {{ $post->editedBy->name }} on {{ $post->edited_at->format('M j, Y \a	 g:i A') }}
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <livewire:post-edit :post="$post" :key="'post-'.$post->id" />
         @endforeach
     </div>
 
@@ -165,4 +90,7 @@
 
     <!-- Reply Form Component -->
     <livewire:post-reply :topic="$topic" />
+    
+    <!-- Toast Notifications -->
+    <livewire:toast-notification />
 </div>

@@ -13,23 +13,56 @@
 
             <!-- Reply Form -->
             @if($showForm)
-                <div class="mt-6 bg-white dark:bg-neutral-900 rounded-xl shadow-xs border border-neutral-200 dark:border-neutral-700">
+                <div class="mt-6 bg-white dark:bg-neutral-900 rounded-xl shadow-xs border border-neutral-200 dark:border-neutral-700" id="reply-form">
                     <div class="border-b border-neutral-200 dark:border-neutral-700 px-6 py-4">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Post Reply</h3>
                     </div>
                     
                     <form wire:submit="submit" class="p-6">
+                        <!-- Quote Preview -->
+                        @if ($quotedPostId)
+                            <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-500 p-4 rounded-r">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <p class="text-sm text-blue-600 dark:text-blue-400 font-semibold mb-2">
+                                            <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Quoting {{ $quotedAuthor }}:
+                                        </p>
+                                        <div class="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-3 rounded border">
+                                            {{ Str::limit($quotedContent, 300) }}
+                                            @if(strlen($quotedContent) > 300)
+                                                <span class="text-gray-500 dark:text-gray-400">...</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <button type="button" wire:click="clearQuote" 
+                                            class="ml-3 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                            title="Remove quote">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Content -->
                         <div class="mb-4">
                             <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Your Reply
                             </label>
-                            <textarea wire:model="content"
-                                      id="content" 
-                                      rows="8"
-                                      maxlength="10000"
-                                      class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                                      placeholder="Write your reply here..."></textarea>
+                            
+                            <!-- Rich Text Editor -->
+                            <livewire:rich-text-editor 
+                                :content="$content"
+                                editor-id="reply-editor"
+                                placeholder="Write your reply here..."
+                                :height="300"
+                                wire:key="reply-editor-{{ $showForm ? 'active' : 'inactive' }}"
+                            />
+                            
                             @error('content')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
@@ -72,4 +105,20 @@
             </a>
         </div>
     @endauth
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Livewire.on('scrollToReplyForm', function() {
+                setTimeout(() => {
+                    const replyForm = document.getElementById('reply-form');
+                    if (replyForm) {
+                        replyForm.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }, 100);
+            });
+        });
+    </script>
 </div>

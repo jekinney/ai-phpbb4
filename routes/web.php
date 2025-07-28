@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\FileUploadController;
 use App\Models\Forum;
 use App\Models\Topic;
+use App\Models\PersonalMessage;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -53,7 +55,45 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    
+    // File upload routes
+    Route::post('/files/upload', [FileUploadController::class, 'upload'])->name('files.upload');
+    Route::delete('/files/{attachment}', [FileUploadController::class, 'destroy'])->name('files.destroy');
+    
+    // Personal Messages routes
+    Route::prefix('messages')->name('messages.')->group(function () {
+        Route::get('/', function () {
+            return view('livewire-wrapper.messages.inbox');
+        })->name('inbox');
+        
+        Route::get('/sent', function () {
+            return view('livewire-wrapper.messages.inbox', ['activeTab' => 'sent']);
+        })->name('sent');
+        
+        Route::get('/unread', function () {
+            return view('livewire-wrapper.messages.inbox', ['activeTab' => 'unread']);
+        })->name('unread');
+        
+        Route::get('/compose', function () {
+            return view('livewire-wrapper.messages.compose');
+        })->name('compose');
+        
+        Route::get('/compose/{recipient}', function ($recipient) {
+            return view('livewire-wrapper.messages.compose', ['recipient' => $recipient]);
+        })->name('compose.to');
+        
+        Route::get('/reply/{replyTo}', function ($replyTo) {
+            return view('livewire-wrapper.messages.compose', ['replyTo' => $replyTo]);
+        })->name('reply');
+        
+        Route::get('/{message}', function (PersonalMessage $message) {
+            return view('livewire-wrapper.messages.show', ['message' => $message]);
+        })->name('show');
+    });
 });
+
+// Public file download route
+Route::get('/files/{attachment}/download', [FileUploadController::class, 'download'])->name('files.download');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -65,6 +105,29 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+    
+    Route::get('/documentation', function () {
+        return view('livewire-wrapper.admin.documentation-viewer');
+    })->name('documentation');
+    
+    Route::get('/files', function () {
+        return view('livewire-wrapper.admin.file-manager');
+    })->name('files');
+    
+    Route::get('/static-pages', function () {
+        return view('livewire-wrapper.admin.static-pages');
+    })->name('static-pages');
+    
+    Route::get('/pm-bans', function () {
+        return view('livewire-wrapper.admin.pm-ban-management');
+    })->name('pm-bans');
 });
 
 require __DIR__.'/auth.php';

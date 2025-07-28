@@ -12,12 +12,22 @@ class TopicShow extends Component
 
     public Topic $topic;
     public $perPage = 15;
+    
+    protected $listeners = [
+        'post-deleted' => 'handlePostDeleted'
+    ];
 
     public function mount(Topic $topic)
     {
         $this->topic = $topic;
         // Increment view count
         $this->topic->incrementViews();
+    }
+    
+    public function handlePostDeleted()
+    {
+        // Refresh the page to remove the deleted post
+        $this->dispatch('$refresh');
     }
 
     public function render()

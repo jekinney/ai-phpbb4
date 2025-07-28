@@ -25,7 +25,12 @@ class User extends Authenticatable
         'password',
         'is_banned',
         'banned_at',
-        'ban_reason'
+        'ban_reason',
+        'is_pm_banned',
+        'pm_banned_at',
+        'pm_ban_reason',
+        'pm_banned_by',
+        'pm_ban_expires_at'
     ];
 
     /**
@@ -49,7 +54,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_banned' => 'boolean',
-            'banned_at' => 'datetime'
+            'banned_at' => 'datetime',
+            'is_pm_banned' => 'boolean',
+            'pm_banned_at' => 'datetime',
+            'pm_ban_expires_at' => 'datetime'
         ];
     }
 
@@ -290,10 +298,186 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the file attachments uploaded by the user.
+     */
+    public function fileAttachments()
+    {
+        return $this->hasMany(FileAttachment::class);
+    }
+
+    /**
+     * Get personal messages sent by the user.
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(PersonalMessage::class, 'sender_id');
+    }
+
+    /**
+     * Get personal messages the user is a participant in.
+     */
+    public function personalMessages()
+    {
+        return $this->belongsToMany(PersonalMessage::class, 'personal_message_participants', 'user_id', 'message_id')
+            ->withPivot(['type', 'is_read', 'read_at', 'is_deleted', 'deleted_at', 'is_archived', 'archived_at'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get personal message participants for this user.
+     */
+    public function messageParticipants()
+    {
+        return $this->hasMany(PersonalMessageParticipant::class);
+    }
+
+    /**
+     * Get unread personal messages count.
+     */
+    public function getUnreadMessagesCountAttribute()
+    {
+        return $this->messageParticipants()
+            ->where('is_read', false)
+            ->where('is_deleted', false)
+            ->count();
+    }
+
+    /**
      * Get the user's post count.
      */
     public function getPostCountAttribute()
     {
         return $this->posts()->count();
+    }
+
+    /**
+     * Get topics the user is following.
+     */
+    public function followedTopics()
+    {
+        return $this->belongsToMany(Topic::class, 'topic_follows')
+            ->withPivot(['notify_replies', 'is_active', 'last_notified_at'])
+            ->withTimestamps()
+            ->wherePivot('is_active', true);
+    }
+
+    /**
+     * Get topic follows for this user.
+     */
+    public function topicFollows()
+    {
+        return $this->hasMany(TopicFollow::class);
+    }
+
+    /**
+     * Check if user is following a topic.
+     */
+    public function isFollowingTopic($topicId): bool
+    {
+        return TopicFollow::isFollowing($this->id, $topicId);
+    }
+
+    /**
+     * Follow a topic.
+     */
+    public function followTopic($topicId, $notifyReplies = true): TopicFollow
+    {
+        return TopicFollow::followTopic($this->id, $topicId, $notifyReplies);
+    }
+
+    /**
+     * Unfollow a topic.
+     */
+    public function unfollowTopic($topicId): bool
+    {
+        return TopicFollow::unfollowTopic($this->id, $topicId);
+    }
+
+    /**
+     * Get the user who banned this user from PM.
+     */
+    public function pmBannedBy()
+    {
+        return $this->belongsTo(User::class, 'pm_banned_by');
+    }
+
+    /**
+     * Check if user is currently PM banned.
+     */
+    public function isPmBanned(): bool
+    {
+        if (!$this->is_pm_banned) {
+            return false;
+        }
+
+        // Check if ban has expired
+        if ($this->pm_ban_expires_at && $this->pm_ban_expires_at->isPast()) {
+            $this->removePmBan();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if user can send PMs.
+     */
+    public function canSendMessages(): bool
+    {
+        return !$this->isPmBanned() && $this->can('send_messages');
+    }
+
+    /**
+     * Check if user can receive PMs.
+     */
+    public function canReceiveMessages(): bool
+    {
+        return !$this->isPmBanned() && $this->can('receive_messages');
+    }
+
+    /**
+     * Ban user from PM system.
+     */
+    public function pmBan(User $bannedBy, string $reason, $expiresAt = null): void
+    {
+        $this->update([
+            'is_pm_banned' => true,
+            'pm_banned_at' => now(),
+            'pm_ban_reason' => $reason,
+            'pm_banned_by' => $bannedBy->id,
+            'pm_ban_expires_at' => $expiresAt ? \Carbon\Carbon::parse($expiresAt) : null,
+        ]);
+    }
+
+    /**
+     * Remove PM ban from user.
+     */
+    public function removePmBan(): void
+    {
+        $this->update([
+            'is_pm_banned' => false,
+            'pm_banned_at' => null,
+            'pm_ban_reason' => null,
+            'pm_banned_by' => null,
+            'pm_ban_expires_at' => null,
+        ]);
+    }
+
+    /**
+     * Get PM ban status info.
+     */
+    public function getPmBanInfo(): ?array
+    {
+        if (!$this->isPmBanned()) {
+            return null;
+        }
+
+        return [
+            'banned_at' => $this->pm_banned_at,
+            'banned_by' => $this->pmBannedBy,
+            'reason' => $this->pm_ban_reason,
+            'expires_at' => $this->pm_ban_expires_at,
+            'is_permanent' => is_null($this->pm_ban_expires_at),
+        ];
     }
 }
